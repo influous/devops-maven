@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>java-maven-app</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <artifactId>devops-maven</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
     <build>
         <plugins>
