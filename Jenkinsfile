@@ -34,7 +34,7 @@ pipeline {
         stage("test") {
             when {
                 expression {
-                    BRANCH_NAME == 'dev' || BRANCH_NAME == 'main'
+                    BRANCH_NAME == 'jenkins-jobs' || BRANCH_NAME == 'main'
                     params.executeTests // if true, this stage is executed
                 }
             }
