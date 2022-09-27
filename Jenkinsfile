@@ -1,19 +1,86 @@
+// CODE_CHANGES = getGitChanges()
+def gvScript
+
 pipeline {
+    parameters {
+        choice(name: 'VERSION', choices: ['1.1.0', '1.2.0', '1.3.0'], description: '')
+        booleanParam(name: 'executeTests', defaultValue: true, description: '')
+    }
+
+    environment {
+        // Usually: Extract the version from the code
+        NEWEST_VERSION = '1.3.0'
+        SERVER_CREDENTIALS = credentials('my-creds')
+    }
+
+    tools {
+        maven 'maven-3.8.6'
+    }
+
     agent any
     stages {
-        stage("build") {
+        stage('init') {
             steps {
-                echo 'Building application...'
+                script {
+                    gvScript = load "script.groovy"
+                }
             }
         }
-        stage("test") {
+        stage('build jar') {
+            // when {
+            //     expression {
+            //         // env.BRANCH_NAME == 'dev' && CODE_CHANGES == true
+            //     }
+            // }
             steps {
-                echo 'Testing application...'
+                script {
+                    gvScript.buildJar()
+                }
             }
         }
-    stage("deploy") {
-        steps {
-            echo 'Deploying application...'
+        stage('build image') {
+            steps {
+                script {
+                    gvScript.buildImage()
+                }
+            }
+        }
+        stage('test') {
+            when {
+                expression {
+                    env.BRANCH_NAME == 'jenkins-jobs' || env.BRANCH_NAME == 'main'
+                    params.executeTests // if true, this stage is executed
+                }
+            }
+            steps {
+                script {
+                    gvScript.testApp()
+                }
+            }
+        }
+        stage('deploy') {
+            steps {
+                script {
+                    env.ENV = input message: 'Select the environment to deploy to:', ok: 'Done', parameters: [choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: '')]
+                    gvScript.deployApp()
+                    echo "Deploying to ${ENV}"
+                }
+                withCredentials([
+                    usernamePassword(credentialsId: 'my-creds', usernameVariable: 'USER', passwordVariable: 'PASSWORD')
+                ]) {
+                    echo 'Done'
+                }
+            }
         }
     }
+
+    // post {
+    //     always {
+    //         //Sending a notifcation (mail)
+    //     }
+    //     success {
+    //     }
+    //     failure {
+    //     }
+    // }
 }
