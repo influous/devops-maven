@@ -23,7 +23,7 @@ pipeline {
         stage("build") {
             // when {
             //     expression {
-            //         // BRANCH_NAME == 'dev' && CODE_CHANGES == true
+            //         // env.BRANCH_NAME == 'dev' && CODE_CHANGES == true
             //     }
             // }
             steps {
@@ -34,7 +34,7 @@ pipeline {
         stage("test") {
             when {
                 expression {
-                    BRANCH_NAME == 'jenkins-jobs' || BRANCH_NAME == 'main'
+                    env.BRANCH_NAME == 'jenkins-jobs' || env.BRANCH_NAME == 'main'
                     params.executeTests // if true, this stage is executed
                 }
             }
