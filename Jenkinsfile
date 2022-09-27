@@ -1,4 +1,5 @@
 // CODE_CHANGES = getGitChanges()
+def gvScript
 
 pipeline {
     parameters {
@@ -18,6 +19,13 @@ pipeline {
 
     agent any
     stages {
+        stage('init') {
+            steps {
+                script {
+                    gvScript = load "script.groovy"
+                }
+            }
+        }
         stage('build') {
             // when {
             //     expression {
@@ -25,8 +33,9 @@ pipeline {
             //     }
             // }
             steps {
-                echo "Building application version ${NEWEST_VERSION}..."
-                // sh 'mvn install'
+                script {
+                    gvScript.buildApp()
+                }
             }
         }
         stage('test') {
@@ -37,15 +46,16 @@ pipeline {
                 }
             }
             steps {
-                echo 'Testing application...'
+                script {
+                    gvScript.testApp()
+                }
             }
         }
         stage('deploy') {
             steps {
-                echo "Deploying application version ${params.VERSION}"
-                echo "Deploying with ${SERVER_CREDENTIALS}"
-                // sh script "${SERVER_CREDENTIALS}"
-
+                script {
+                    gvScript.deployApp()
+                }
                 withCredentials([
                     usernamePassword(credentialsId: 'my-creds', usernameVariable: 'USER', passwordVariable: 'PASSWORD')
                 ]) {
