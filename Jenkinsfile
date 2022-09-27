@@ -1,7 +1,6 @@
 // CODE_CHANGES = getGitChanges()
 
 pipeline {
-
     parameters {
         choice(name: 'VERSION', choices: ['1.1.0', '1.2.0', '1.3.0'], description: '')
         booleanParam(name: 'executeTests', defaultValue: true, description: '')
@@ -18,9 +17,8 @@ pipeline {
     // }
 
     agent any
-    
     stages {
-        stage("build") {
+        stage('build') {
             // when {
             //     expression {
             //         // env.BRANCH_NAME == 'dev' && CODE_CHANGES == true
@@ -31,7 +29,7 @@ pipeline {
                 // sh 'mvn install'
             }
         }
-        stage("test") {
+        stage('test') {
             when {
                 expression {
                     env.BRANCH_NAME == 'jenkins-jobs' || env.BRANCH_NAME == 'main'
@@ -42,18 +40,17 @@ pipeline {
                 echo 'Testing application...'
             }
         }
-        stage("deploy") {
+        stage('deploy') {
             steps {
                 echo "Deploying application version ${params.VERSION}"
                 echo "Deploying with ${SERVER_CREDENTIALS}"
                 // sh script "${SERVER_CREDENTIALS}"
 
                 withCredentials([
-                    usernamePassword(credentials: 'my-creds', usernameVariable: USER, passwordVariable: PASSWORD)
+                    usernamePassword(credentials: 'my-creds', usernameVariable: 'USER', passwordVariable: 'PASSWORD')
                 ]) {
                     echo "${USER}:${PASSWORD}"
                 }
-
             }
         }
     }
