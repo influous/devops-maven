@@ -52,9 +52,17 @@ pipeline {
             }
         }
         stage('deploy') {
+            input {
+                message 'Select the environment to deploy to'
+                ok 'Done'
+                parameters {
+                    choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: '')
+                }
+            }
             steps {
                 script {
                     gvScript.deployApp()
+                    echo "Deploying to ${ENV}"
                 }
                 withCredentials([
                     usernamePassword(credentialsId: 'my-creds', usernameVariable: 'USER', passwordVariable: 'PASSWORD')
