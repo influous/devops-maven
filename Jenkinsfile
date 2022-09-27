@@ -13,9 +13,9 @@ pipeline {
         SERVER_CREDENTIALS = credentials('my-creds')
     }
 
-    // tools {
-    //     maven 'Maven'
-    // }
+    tools {
+        maven 'Maven'
+    }
 
     agent any
     stages {
@@ -26,7 +26,7 @@ pipeline {
                 }
             }
         }
-        stage('build') {
+        stage('build jar') {
             // when {
             //     expression {
             //         // env.BRANCH_NAME == 'dev' && CODE_CHANGES == true
@@ -34,7 +34,14 @@ pipeline {
             // }
             steps {
                 script {
-                    gvScript.buildApp()
+                    gvScript.buildJar()
+                }
+            }
+        }
+        stage('build image') {
+            steps {
+                script {
+                    gvScript.buildImage()
                 }
             }
         }
@@ -54,14 +61,14 @@ pipeline {
         stage('deploy') {
             steps {
                 script {
-                    env.ENV = input message: 'Select the environments to deploy to:', ok: 'Done', parameters: [choice(name: 'ONE', choices: ['dev', 'staging', 'prod'], description: '')]
+                    env.ENV = input message: 'Select the environment to deploy to:', ok: 'Done', parameters: [choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: '')]
                     gvScript.deployApp()
                     echo "Deploying to ${ENV}"
                 }
                 withCredentials([
                     usernamePassword(credentialsId: 'my-creds', usernameVariable: 'USER', passwordVariable: 'PASSWORD')
                 ]) {
-                    echo 'OK'
+                    echo 'Done'
                 }
             }
         }
