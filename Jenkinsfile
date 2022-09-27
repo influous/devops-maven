@@ -14,7 +14,7 @@ pipeline {
     }
 
     tools {
-        maven 'Maven'
+        maven 'maven-3.8.6'
     }
 
     agent any
