@@ -21,11 +21,11 @@ pipeline {
     
     stages {
         stage("build") {
-            when {
-                expression {
-                    // BRANCH_NAME == 'dev' && CODE_CHANGES == true
-                }
-            }
+            // when {
+            //     expression {
+            //         // BRANCH_NAME == 'dev' && CODE_CHANGES == true
+            //     }
+            // }
             steps {
                 echo "Building application version ${NEWEST_VERSION}..."
                 // sh 'mvn install'
@@ -58,13 +58,13 @@ pipeline {
         }
     }
 
-    post {
-        always {
-            //Sending a notifcation (mail)
-        }
-        success {
-        }
-        failure {
-        }
-    }
+    // post {
+    //     always {
+    //         //Sending a notifcation (mail)
+    //     }
+    //     success {
+    //     }
+    //     failure {
+    //     }
+    // }
 }
