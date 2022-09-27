@@ -47,9 +47,9 @@ pipeline {
                 // sh script "${SERVER_CREDENTIALS}"
 
                 withCredentials([
-                    usernamePassword(credentials: 'my-creds', usernameVariable: 'USER', passwordVariable: 'PASSWORD')
+                    usernamePassword(credentialsId: 'my-creds', usernameVariable: 'USER', passwordVariable: 'PASSWORD')
                 ]) {
-                    echo "${USER}:${PASSWORD}"
+                    echo 'OK'
                 }
             }
         }
