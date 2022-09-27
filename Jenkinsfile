@@ -46,7 +46,7 @@ pipeline {
             steps {
                 echo "Deploying application version ${params.VERSION}"
                 echo "Deploying with ${SERVER_CREDENTIALS}"
-                sh "${SERVER_CREDENTIALS}"
+                // sh script "${SERVER_CREDENTIALS}"
 
                 withCredentials([
                     usernamePassword(credentials: 'my-creds', usernameVariable: USER, passwordVariable: PASSWORD)
