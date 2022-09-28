@@ -42,10 +42,12 @@ pipeline {
                 }
             }
         }
-        stage('build image') {
+        stage('build and push image') {
             steps {
                 script {
                     buildImage('influous/infx-repo:dm1.2')
+                    dockerLogin()
+                    dockerPush 'influous/infx-repo:dm1.2'
                 }
             }
         }
