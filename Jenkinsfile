@@ -51,7 +51,7 @@ pipeline {
         stage('test') {
             when {
                 expression {
-                    env.BRANCH_NAME == 'jenkins-jobs' || env.BRANCH_NAME == 'main'
+                    env.BRANCH_NAME == 'jenkins-shared-lib' || env.BRANCH_NAME == 'main'
                     params.executeTests // if true, this stage is executed
                 }
             }
