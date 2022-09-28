@@ -1,6 +1,14 @@
 #!/usr/bin/env groovy
 
-@Library('jenkins-shared-library') _
+// @Library('jenkins-shared-library') _
+
+library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
+    [$class: 'GitSCMSource',
+    remote: 'https://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@github.com/influous/jenkins-shared-library',
+    credentialsId: ''
+    ]
+)
+
 
 def gvScript
 
