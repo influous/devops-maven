@@ -30,11 +30,11 @@ pipeline {
             }
         }
         stage('build jar') {
-            when {
-                expression {
-                    env.BRANCH_NAME == 'main'
-                }
-            }
+            // when {
+            //     expression {
+            //         env.BRANCH_NAME == 'main'
+            //     }
+            // }
             steps {
                 script {
                     buildJar()
