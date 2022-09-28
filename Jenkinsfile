@@ -1,4 +1,6 @@
-// CODE_CHANGES = getGitChanges()
+#!/usr/bin/env groovy
+
+@Library('jenkins-shared-library')
 def gvScript
 
 pipeline {
@@ -34,14 +36,14 @@ pipeline {
             }
             steps {
                 script {
-                    gvScript.buildJar()
+                    buildJar()
                 }
             }
         }
         stage('build image') {
             steps {
                 script {
-                    gvScript.buildImage()
+                    buildImage()
                 }
             }
         }
