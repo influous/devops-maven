@@ -24,17 +24,17 @@ pipeline {
         stage('init') {
             steps {
                 script {
-                    echo "env.BRANCH_NAME"
+                    echo "${env.BRANCH_NAME}"
                     gvScript = load "script.groovy"
                 }
             }
         }
         stage('build jar') {
-            // when {
-            //     expression {
-            //         env.BRANCH_NAME == 'main'
-            //     }
-            // }
+            when {
+                expression {
+                    env.BRANCH_NAME == 'main'
+                }
+            }
             steps {
                 script {
                     buildJar()
@@ -51,7 +51,7 @@ pipeline {
         stage('test') {
             when {
                 expression {
-                    env.BRANCH_NAME == 'jenkins-shared-lib'
+                    env.BRANCH_NAME == 'main'
                     params.executeTests // if true, this stage is executed
                 }
             }
@@ -62,11 +62,11 @@ pipeline {
             }
         }
         stage('deploy') {
-            // when {
-            //     expression {
-            //         env.BRANCH_NAME == 'main'
-            //     }
-            // }
+            when {
+                expression {
+                    env.BRANCH_NAME == 'main'
+                }
+            }
             steps {
                 script {
                     env.ENV = input message: 'Select the environment to deploy to:', ok: 'Done', parameters: [choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: '')]
