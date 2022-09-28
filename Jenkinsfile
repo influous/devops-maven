@@ -1,6 +1,9 @@
 #!/usr/bin/env groovy
 
 @Library('jenkins-shared-library')
+
+import com.influous.Docker
+
 def gvScript
 
 pipeline {
