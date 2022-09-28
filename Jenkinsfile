@@ -24,6 +24,7 @@ pipeline {
         stage('init') {
             steps {
                 script {
+                    echo "env.BRANCH_NAME"
                     gvScript = load "script.groovy"
                 }
             }
