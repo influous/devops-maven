@@ -44,7 +44,7 @@ pipeline {
         stage('build image') {
             steps {
                 script {
-                    buildImage()
+                    buildImage('influous/infx-repo:dm1.2')
                 }
             }
         }
