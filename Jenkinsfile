@@ -85,9 +85,9 @@ pipeline {
                     sh 'git status'
                     sh 'git branch'
                     sh 'git config --list'
-                    sh 'git remove set-url origin https://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@github.com/influous/devops-maven'
+                    sh 'git remote set-url origin https://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@github.com/influous/devops-maven'
                     sh 'git add .'
-                    sh 'git commit -m "CI: version bump"'
+                    sh 'git commit -m "CI: Version bump"'
                     sh 'git push origin HEAD:jenkins-jobs'
                 }
             }
