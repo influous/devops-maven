@@ -19,9 +19,9 @@ pipeline {
     }
 
     environment {
-        // Usually: Extract the version from the code
-        NEWEST_VERSION = '1.3.0'
-        SERVER_CREDENTIALS = credentials('my-creds')
+        // NEWEST_VERSION = '1.3.0'
+        // SERVER_CREDENTIALS = credentials('my-creds')
+        TEST = true
     }
 
     tools {
