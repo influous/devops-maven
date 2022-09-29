@@ -67,7 +67,7 @@ pipeline {
         stage('deploy') {
             when {
                 expression {
-                    env.BRANCH_NAME == 'jenkins-shared-lib'
+                    env.BRANCH_NAME == 'jenkins-jobs'
                 }
             }
             steps {
