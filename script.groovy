@@ -1,5 +1,5 @@
 def buildJar() {
-    echo "Building the application (JAR) v${NEWEST_VERSION}..."
+    echo "Building the application (JAR) v${params.VERSION}..."
     sh 'mvn package'
 }
 
