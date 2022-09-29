@@ -1,16 +1,18 @@
-// CODE_CHANGES = getGitChanges()
+#!/usr/bin/env groovy
+
+library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
+    [$class: 'GitSCMSource',
+    remote: 'https://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@github.com/influous/jenkins-shared-library',
+    credentialsId: ''
+    ]
+)
+
 def gvScript
 
 pipeline {
     parameters {
-        choice(name: 'VERSION', choices: ['1.1.0', '1.2.0', '1.3.0'], description: '')
+        choice(name: 'VERSION', choices: ['1.1.1', '1.2.0', '1.3.0'], description: '')
         booleanParam(name: 'executeTests', defaultValue: true, description: '')
-    }
-
-    environment {
-        // Usually: Extract the version from the code
-        NEWEST_VERSION = '1.3.0'
-        SERVER_CREDENTIALS = credentials('my-creds')
     }
 
     tools {
@@ -18,10 +20,12 @@ pipeline {
     }
 
     agent any
+    
     stages {
         stage('init') {
             steps {
                 script {
+                    echo "${env.BRANCH_NAME}"
                     gvScript = load "script.groovy"
                 }
             }
@@ -29,27 +33,29 @@ pipeline {
         stage('build jar') {
             when {
                 expression {
-                    env.BRANCH_NAME == 'main'
+                    env.BRANCH_NAME == 'jenkins-jobs'
                 }
             }
             steps {
                 script {
-                    gvScript.buildJar()
+                    buildJar()
                 }
             }
         }
-        stage('build image') {
+        stage('build and push image') {
             steps {
                 script {
-                    gvScript.buildImage()
+                    buildImage('influous/infx-repo:dm1.1.1')
+                    dockerLogin()
+                    dockerPush 'influous/infx-repo:dm1.1.1'
                 }
             }
         }
         stage('test') {
             when {
                 expression {
-                    env.BRANCH_NAME == 'jenkins-jobs' || env.BRANCH_NAME == 'main'
-                    params.executeTests // if true, this stage is executed
+                    env.BRANCH_NAME == 'jenkins-jobs'
+                    params.executeTests = false // if true, this stage is executed
                 }
             }
             steps {
@@ -61,14 +67,13 @@ pipeline {
         stage('deploy') {
             when {
                 expression {
-                    env.BRANCH_NAME == 'main'
+                    env.BRANCH_NAME == 'jenkins-shared-lib'
                 }
             }
             steps {
                 script {
-                    env.ENV = input message: 'Select the environment to deploy to:', ok: 'Done', parameters: [choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: '')]
                     gvScript.deployApp()
-                    echo "Deploying to ${ENV}"
+                    echo "Deploying to ${env.BRANCH_NAME}"
                 }
                 withCredentials([
                     usernamePassword(credentialsId: 'my-creds', usernameVariable: 'USER', passwordVariable: 'PASSWORD')
@@ -79,13 +84,4 @@ pipeline {
         }
     }
 
-    // post {
-    //     always {
-    //         //Sending a notifcation (mail)
-    //     }
-    //     success {
-    //     }
-    //     failure {
-    //     }
-    // }
 }
