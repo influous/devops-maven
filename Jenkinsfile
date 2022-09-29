@@ -77,6 +77,21 @@ pipeline {
                 }
             }
         }
+        stage('commit version update') {
+            steps {
+                script {
+                    sh 'git config --global user.email "jenkins@kook.work"'
+                    sh 'git config -- global user.name "jenkins"'
+                    sh 'git status'
+                    sh 'git branch'
+                    sh 'git config --list'
+                    sh 'git remove set-url origin https://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@github.com/influous/devops-maven'
+                    sh 'git add .'
+                    sh 'git commit -m "CI: version bump"'
+                    sh 'git push origin HEAD:jenkins-jobs'
+                }
+            }
+        }
     }
 
 }
