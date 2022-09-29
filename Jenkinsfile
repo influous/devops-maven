@@ -1,12 +1,5 @@
 #!/usr/bin/env groovy
 
-library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
-    [$class: 'GitSCMSource',
-    remote: 'https://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@github.com/influous/jenkins-shared-library',
-    credentialsId: ''
-    ]
-)
-
 def gvScript
 
 pipeline {
@@ -38,16 +31,14 @@ pipeline {
             }
             steps {
                 script {
-                    buildJar()
+                    gvScript.buildJar()
                 }
             }
         }
         stage('build and push image') {
             steps {
                 script {
-                    buildImage('influous/infx-repo:dm1.1.1')
-                    dockerLogin()
-                    dockerPush 'influous/infx-repo:dm1.1.1'
+                    gvScript.buildImage()
                 }
             }
         }
