@@ -20,7 +20,7 @@ pipeline {
     }
 
     agent any
-    
+
     stages {
         stage('init') {
             steps {
@@ -55,7 +55,7 @@ pipeline {
             when {
                 expression {
                     env.BRANCH_NAME == 'jenkins-jobs'
-                    params.executeTests = false // if true, this stage is executed
+                    params.executeTests == false // if true, this stage is executed
                 }
             }
             steps {
