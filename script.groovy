@@ -16,9 +16,9 @@ def buildJar() {
 def buildImage() {
     echo 'Building Docker image'
     withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', usernameVariable: 'USER', passwordVariable: 'PASSWORD')]) {
-        sh "docker build -t influous/infx-repo:$IMAGE_NAME ."
+        sh "docker build -t influous/infx-repo:${IMAGE_NAME} ."
         sh "echo '${PASSWORD}' | docker login -u $USER --password-stdin"
-        sh "docker push influous/infx-repo:$IMAGE_NAME"
+        sh "docker push influous/infx-repo:${IMAGE_NAME}"
     }
 }
 
