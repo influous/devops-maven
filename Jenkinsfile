@@ -80,7 +80,7 @@ pipeline {
         stage('commit version update') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'github', userSecret: 'SECRET')]) {
+                    withCredentials([string(credentialsId: 'github', passwordVariable: 'PASSWORD', usernameVariable: 'USER')]) {
                     sh 'git config --global user.email "jenkins@kook.work"'
                     sh 'git config --global user.name "jenkins"'
                     sh 'git status'
