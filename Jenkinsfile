@@ -4,7 +4,7 @@ def gvScript
 
 pipeline {
     parameters {
-        choice(name: 'VERSION', choices: ['1.1.1', '1.2.0', '1.3.0'], description: '')
+        // choice(name: 'VERSION', choices: ['1.1.1', '1.2.0', '1.3.0'], description: '')
         booleanParam(name: 'executeTests', defaultValue: true, description: '')
     }
 
@@ -55,7 +55,7 @@ pipeline {
             when {
                 expression {
                     env.BRANCH_NAME == 'jenkins-jobs'
-                    params.executeTests == false // if true, this stage is executed
+                    params.executeTests // if true, this stage is executed
                 }
             }
             steps {
@@ -65,15 +65,10 @@ pipeline {
             }
         }
         stage('deploy') {
-            when {
-                expression {
-                    env.BRANCH_NAME == 'jenkins-jobs'
-                }
-            }
             steps {
                 script {
                     gvScript.deployApp()
-                    echo "Deploying to ${env.BRANCH_NAME}"
+                    echo "Deploying to branch ${env.BRANCH_NAME}"
                 }
                 withCredentials([
                     usernamePassword(credentialsId: 'my-creds', usernameVariable: 'USER', passwordVariable: 'PASSWORD')
