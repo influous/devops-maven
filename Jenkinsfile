@@ -85,7 +85,6 @@ pipeline {
             steps {
                 script {
                     deployApp()
-                    }
                 }
             }
         }
