@@ -9,7 +9,7 @@ library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
 
 pipeline {
     parameters {
-        // choice(name: 'VERSION', choices: ['1.0.0', '1.1.0', '1.2.0'], description: '')
+        choice(name: 'VERSION', choices: ['1.0.0', '1.1.0', '1.2.0'], description: '')
         booleanParam(name: 'executeTests', defaultValue: true, description: '')
     }
 
@@ -20,13 +20,13 @@ pipeline {
     environment {
         EC2_USER = 'ubuntu'
         EC2_ADDRESS = '3.75.211.238'
-        IMAGE_NAME = "influous/react-nodejs-example:1.0-${BUILD_NUMBER}"
+        IMAGE_NAME = "influous/devops-maven:1.0-${BUILD_NUMBER}"
     }
 
     agent any
 
     stages {
-        stage('init') {
+        stage('Init') {
             steps {
                 script {
                     echo "Image name: ${env.IMAGE_NAME}"
@@ -35,7 +35,7 @@ pipeline {
             }
         }
 
-        stage('increment version') {
+        stage('Increment Version') {
             steps {
                 script {
                     incrementVersion()
@@ -43,7 +43,7 @@ pipeline {
             }
         }
 
-        stage('build jar') {
+        stage('Build Jar') {
             when {
                 expression {
                     env.BRANCH_NAME == 'jenkins-jobs'
@@ -51,12 +51,12 @@ pipeline {
             }
             steps {
                 script {
-                    echo "Building the JAR application v${params.VERSION}..."
+                    echo "Building the application v${params.VERSION}..."
                     buildJar()
                 }
             }
         }
-        stage('build and push image') {
+        stage('Build & Push Docker Image') {
             steps {
                 script {
                     buildImage(env.IMAGE_NAME)
@@ -65,7 +65,7 @@ pipeline {
                 }
             }
         }
-        stage('test') {
+        stage('Test') {
             when {
                 expression {
                     env.BRANCH_NAME == 'jenkins-jobs'
@@ -78,14 +78,14 @@ pipeline {
                 }
             }
         }
-        stage('deploy') {
+        stage('Deploy') {
             steps {
                 script {
                     deployApp()
                 }
             }
         }
-        stage('commit version update') {
+        stage('Commit Version Update') {
             steps {
                 script {
                     updateGit()
