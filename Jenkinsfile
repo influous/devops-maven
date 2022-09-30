@@ -7,8 +7,6 @@ library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
     ]
 )
 
-def gvScript
-
 pipeline {
     parameters {
         // choice(name: 'VERSION', choices: ['1.0.0', '1.1.0', '1.2.0'], description: '')
@@ -33,7 +31,6 @@ pipeline {
                 script {
                     echo "Image name: ${env.IMAGE_NAME}"
                     echo "Working on branch: ${env.BRANCH_NAME}"
-                    gvScript = load "script.groovy"
                 }
             }
         }
@@ -41,7 +38,7 @@ pipeline {
         stage('increment version') {
             steps {
                 script {
-                    gvScript.incrementVersion()
+                    incrementVersion()
                 }
             }
         }
@@ -91,17 +88,7 @@ pipeline {
         stage('commit version update') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'PASSWORD', usernameVariable: 'USER')]) {
-                    sh 'git config --global user.email "jenkins@kook.work"'
-                    sh 'git config --global user.name "jenkins"'
-                    // sh 'git status'
-                    // sh 'git branch'
-                    // sh 'git config --list'
-                    sh "git remote set-url origin https://${PASSWORD}@github.com/${USER}/devops-maven.git"
-                    sh 'git add .'
-                    sh 'git commit -m "CI: Version bump"'
-                    sh 'git push origin HEAD:jenkins-jobs'
-                    }
+                    updateGit()
                 }
             }
         }
