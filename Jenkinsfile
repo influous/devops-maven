@@ -11,6 +11,11 @@ pipeline {
     tools {
         maven 'maven-3.8.6'
     }
+    
+    environment {
+        EC2_USER = 'ubuntu'
+        EC2_ADDRESS = '3.75.211.238'
+    }
 
     agent any
 
@@ -69,6 +74,11 @@ pipeline {
                 script {
                     gvScript.deployApp()
                     echo "Deploying to branch ${env.BRANCH_NAME}"
+                    def dockerCmd = 'docker run -d -p 3000:80 influous/react-nodejs-example:1.0'
+                    sshagent(['ec2-ssh-key']) {
+                        // -o flag avoids SSH popup
+                        sh "ssh -o StrictHostKeyChecking=no ${USER}@${ADDRESS} ${dockerCmd}"
+                    }
                 }
                 withCredentials([
                     usernamePassword(credentialsId: 'my-creds', usernameVariable: 'USER', passwordVariable: 'PASSWORD')
