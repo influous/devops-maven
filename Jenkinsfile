@@ -4,8 +4,8 @@
 
 library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
     [$class: 'GitSCMSource',
-    remote: 'https://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@github.com/influous/jenkins-shared-library',
-    credentialsId: ''
+    remote: 'https://github.com/influous/jenkins-shared-library',
+    credentialsId: 'github'
     ]
 )
 
@@ -31,7 +31,7 @@ pipeline {
         stage('init') {
             steps {
                 script {
-                    echo "${env.BRANCH_NAME}"
+                    echo "Current branch: ${env.BRANCH_NAME}"
                     gvScript = load "script.groovy"
                 }
             }
