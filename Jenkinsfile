@@ -77,7 +77,7 @@ pipeline {
                     def dockerCmd = 'docker run -d -p 3000:80 influous/react-nodejs-example:1.0'
                     sshagent(['ec2-ssh-key']) {
                         // -o flag avoids SSH popup
-                        sh "ssh -o StrictHostKeyChecking=no ${USER}@${ADDRESS} ${dockerCmd}"
+                        sh "ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_ADDRESS} ${dockerCmd}"
                     }
                 }
                 withCredentials([
