@@ -18,7 +18,7 @@ def buildImage() {
     withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', usernameVariable: 'USER', passwordVariable: 'PASSWORD')]) {
         sh "docker build -t ${IMAGE_NAME} ."
         sh "echo '${PASSWORD}' | docker login -u $USER --password-stdin"
-        sh "docker push influous/infx-repo:${IMAGE_NAME}"
+        sh "docker push ${IMAGE_NAME}"
     }
 }
 
