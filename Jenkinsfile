@@ -22,7 +22,7 @@ pipeline {
     environment {
         EC2_USER = 'ubuntu'
         EC2_ADDRESS = '3.75.211.238'
-        IMAGE_NAME = 'influous/react-nodejs-example:1.0'
+        IMAGE_NAME = "influous/react-nodejs-example:1.0-${BUILD_NUMBER}"
     }
 
     agent any
@@ -31,7 +31,8 @@ pipeline {
         stage('init') {
             steps {
                 script {
-                    echo "${env.BRANCH_NAME}"
+                    echo "Image name: ${env.IMAGE_NAME}"
+                    echo "Working on branch: ${env.BRANCH_NAME}"
                     gvScript = load "script.groovy"
                 }
             }
@@ -54,14 +55,13 @@ pipeline {
             steps {
                 script {
                     buildJar()
-                    // gvScript.buildJar()
                 }
             }
         }
         stage('build and push image') {
             steps {
                 script {
-                    gvScript.buildImage()
+                    buildImage(env.IMAGE_NAME)
                 }
             }
         }
