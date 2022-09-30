@@ -4,7 +4,7 @@ def gvScript
 
 pipeline {
     parameters {
-        // choice(name: 'VERSION', choices: ['1.1.1', '1.2.0', '1.3.0'], description: '')
+        // choice(name: 'VERSION', choices: ['1.0.0', '1.1.0', '1.2.0'], description: '')
         booleanParam(name: 'executeTests', defaultValue: true, description: '')
     }
 
@@ -83,9 +83,9 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'PASSWORD', usernameVariable: 'USER')]) {
                     sh 'git config --global user.email "jenkins@kook.work"'
                     sh 'git config --global user.name "jenkins"'
-                    sh 'git status'
-                    sh 'git branch'
-                    sh 'git config --list'
+                    // sh 'git status'
+                    // sh 'git branch'
+                    // sh 'git config --list'
                     sh "git remote set-url origin https://${PASSWORD}@github.com/${USER}/devops-maven.git"
                     sh 'git add .'
                     sh 'git commit -m "CI: Version bump"'
