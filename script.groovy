@@ -8,19 +8,19 @@ def incrementVersion() {
     env.IMAGE_NAME = "$version-$BUILD_NUMBER"
 }
 
-def buildJar() {
-    echo "Building the application (JAR) v${params.VERSION}..."
-    sh 'mvn clean package'
-}
+// def buildJar() {
+//     echo "Building the application (JAR) v${params.VERSION}..."
+//     sh 'mvn clean package'
+// }
 
-def buildImage() {
-    echo 'Building Docker image'
-    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', usernameVariable: 'USER', passwordVariable: 'PASSWORD')]) {
-        sh "docker build -t ${IMAGE_NAME} ."
-        sh "echo '${PASSWORD}' | docker login -u $USER --password-stdin"
-        sh "docker push ${IMAGE_NAME}"
-    }
-}
+// def buildImage() {
+//     echo 'Building Docker image'
+//     withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', usernameVariable: 'USER', passwordVariable: 'PASSWORD')]) {
+//         sh "docker build -t ${IMAGE_NAME} ."
+//         sh "echo '${PASSWORD}' | docker login -u $USER --password-stdin"
+//         sh "docker push ${IMAGE_NAME}"
+//     }
+// }
 
 def testApp() {
     echo 'Testing application...'
