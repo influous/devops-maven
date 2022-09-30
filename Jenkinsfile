@@ -1,5 +1,12 @@
 #!/usr/bin/env groovy
 
+library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
+    [$class: 'GitSCMSource',
+    remote: 'https://github.com/influous/jenkins-shared-library',
+    credentialsId: 'github'
+    ]
+)
+
 def gvScript
 
 pipeline {
@@ -15,6 +22,7 @@ pipeline {
     environment {
         EC2_USER = 'ubuntu'
         EC2_ADDRESS = '3.75.211.238'
+        IMAGE_NAME = 'influous/react-nodejs-example:1.0'
     }
 
     agent any
@@ -45,7 +53,8 @@ pipeline {
             }
             steps {
                 script {
-                    gvScript.buildJar()
+                    buildJar()
+                    // gvScript.buildJar()
                 }
             }
         }
@@ -74,7 +83,7 @@ pipeline {
                 script {
                     gvScript.deployApp()
                     echo "Deploying to branch ${env.BRANCH_NAME}"
-                    def dockerCmd = 'docker run -d -p 3000:80 influous/react-nodejs-example:1.0'
+                    def dockerCmd = "docker run -d -p 3000:80 ${IMAGE_NAME}"
                     sshagent(['ec2-ssh-key']) {
                         // -o flag avoids SSH popup
                         sh "ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_ADDRESS} ${dockerCmd}"
