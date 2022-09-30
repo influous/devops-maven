@@ -52,9 +52,7 @@ pipeline {
             }
             steps {
                 script {
-                    def matchedFile = readFile('pom.xml') =~ '<version>(.+)</version>'
-                    def version = matchedFile[0][1] // text inside <version>
-                    echo "Building the application v${version}..."
+                    echo "Building the application v${params.VERSION}..."
                     buildJar()
                 }
             }
