@@ -22,7 +22,8 @@ pipeline {
         EC2_USER = 'ubuntu'
         EC2_ADDRESS = '3.66.212.255'
         IMAGE_BASE = 'influous/devops-maven'
-        IMAGE_BUILD = "${IMAGE_BASE}:1.0-${BUILD_NUMBER}"
+        IMAGE_TAG = '1.0'
+        IMAGE_BUILD = "${IMAGE_BASE}:${IMAGE_TAG}-${BUILD_NUMBER}"
         IMAGE_LATEST = "${IMAGE_BASE}:latest"
     }
 
@@ -56,7 +57,7 @@ pipeline {
             steps {
                 script {
                     // echo "Building the application v${params.VERSION}..."
-                    echo "Building the application v${env.IMAGE_BUILD}..."
+                    echo "Building the application v ${env.IMAGE_TAG}..."
                     buildJar()
                 }
             }
