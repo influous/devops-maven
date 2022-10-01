@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   devops-maven:
-    image: influous/devops-maven
+    image: ${IMAGE}
     ports:
       - 8080:8080
   postgres:

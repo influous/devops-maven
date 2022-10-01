@@ -55,7 +55,8 @@ pipeline {
             }
             steps {
                 script {
-                    echo "Building the application v${params.VERSION}..."
+                    // echo "Building the application v${params.VERSION}..."
+                    echo "Building the application v${env.IMAGE_BUILD}..."
                     buildJar()
                 }
             }
