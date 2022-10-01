@@ -21,7 +21,9 @@ pipeline {
     environment {
         EC2_USER = 'ubuntu'
         EC2_ADDRESS = '3.66.212.255'
-        IMAGE_NAME = "influous/devops-maven:1.0-${BUILD_NUMBER}"
+        IMAGE_BASE = 'devops-maven'
+        IMAGE_BUILD = "${IMAGE_BASE}:1.0-${BUILD_NUMBER}"
+        IMAGE_LATEST = "${IMAGE_BASE}:latest"
     }
 
     agent any
@@ -30,7 +32,8 @@ pipeline {
         stage('Init') {
             steps {
                 script {
-                    echo "Image name: ${env.IMAGE_NAME}"
+                    echo "Image name: ${env.IMAGE_BASE}"
+                    echo "Build: ${env.IMAGE_BUILD}"
                     echo "Working on branch: ${env.BRANCH_NAME}"
                 }
             }
@@ -60,9 +63,9 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 script {
-                    buildImage(env.IMAGE_NAME)
+                    buildImage(env.IMAGE_BUILD, env.IMAGE_LATEST)
                     dockerLogin()
-                    dockerPush(env.IMAGE_NAME)
+                    dockerPush(env.IMAGE_BASE)
                 }
             }
         }
