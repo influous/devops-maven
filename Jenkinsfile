@@ -21,7 +21,7 @@ pipeline {
     environment {
         EC2_USER = 'ubuntu'
         EC2_ADDRESS = '3.66.212.255'
-        IMAGE_BASE = 'devops-maven'
+        IMAGE_BASE = 'influous/devops-maven'
         IMAGE_BUILD = "${IMAGE_BASE}:1.0-${BUILD_NUMBER}"
         IMAGE_LATEST = "${IMAGE_BASE}:latest"
     }
