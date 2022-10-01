@@ -20,7 +20,7 @@ pipeline {
     
     environment {
         EC2_USER = 'ubuntu'
-        EC2_ADDRESS = '3.75.211.238'
+        EC2_ADDRESS = '3.66.212.255'
         IMAGE_NAME = "influous/devops-maven:1.0-${BUILD_NUMBER}"
     }
 
