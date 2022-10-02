@@ -49,15 +49,8 @@ pipeline {
         }
 
         stage('Build Jar') {
-            when {
-                expression {
-                    env.BRANCH_NAME == 'jenkins-jobs'
-                }
-            }
             steps {
                 script {
-                    // echo "Building the application v${params.VERSION}..."
-                    echo "Building the application v${env.IMAGE_TAG}..."
                     buildJar()
                 }
             }
@@ -84,7 +77,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
+        stage('EC2 Deploy') {
             steps {
                 script {
                     deployApp()
