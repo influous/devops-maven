@@ -67,7 +67,7 @@ pipeline {
                 script {
                     buildImage(env.IMAGE_BUILD, env.IMAGE_LATEST)
                     dockerLogin()
-                    dockerPush(env.IMAGE_BASE)
+                    dockerPush(env.IMAGE_BUILD, env.IMAGE_LATEST)
                 }
             }
         }
