@@ -1,57 +1,70 @@
 #!/usr/bin/env groovy
 
-def gvScript
+library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
+    [$class: 'GitSCMSource',
+    remote: 'https://github.com/influous/jenkins-shared-library',
+    credentialsId: 'github'
+    ]
+)
 
 pipeline {
     parameters {
-        // choice(name: 'VERSION', choices: ['1.1.1', '1.2.0', '1.3.0'], description: '')
+        string(name: 'VERSION', defaultValue: "${env.VERSION}", description: '')
+        // choice(name: 'VERSION', choices: ['1.0.0', '1.1.0', '1.2.0'], description: '')
         booleanParam(name: 'executeTests', defaultValue: true, description: '')
     }
 
     tools {
         maven 'maven-3.8.6'
     }
+    
+    environment {
+        EC2_USER = 'ubuntu'
+        EC2_ADDRESS = '3.75.225.159'
+        IMAGE_BASE = 'influous/devops-maven'
+        IMAGE_TAG = '1.0'
+        IMAGE_BUILD = "${IMAGE_BASE}:${IMAGE_TAG}-${BUILD_NUMBER}"
+        IMAGE_LATEST = "${IMAGE_BASE}:latest"
+    }
 
     agent any
 
     stages {
-        stage('init') {
+        stage('Init') {
             steps {
                 script {
-                    echo "${env.BRANCH_NAME}"
-                    gvScript = load "script.groovy"
+                    echo "Image name: ${env.IMAGE_BASE}"
+                    echo "Build: ${env.IMAGE_BUILD}"
+                    echo "Working on branch: ${env.BRANCH_NAME}"
                 }
             }
         }
 
-        stage('increment version') {
+        stage('Increment Version') {
             steps {
                 script {
-                    gvScript.incrementVersion()
+                    incrementVersion()
                 }
             }
         }
 
-        stage('build jar') {
-            when {
-                expression {
-                    env.BRANCH_NAME == 'jenkins-jobs'
-                }
-            }
+        stage('Build Jar') {
             steps {
                 script {
-                    gvScript.buildJar()
+                    buildJar()
                 }
             }
         }
-        stage('build and push image') {
+        stage('Build & Push Docker Image') {
             steps {
                 script {
-                    gvScript.buildImage()
+                    buildImage(env.IMAGE_BUILD, env.IMAGE_LATEST)
+                    dockerLogin()
+                    dockerPush(env.IMAGE_BUILD, env.IMAGE_LATEST)
                 }
             }
         }
-        stage('test') {
+        stage('Test') {
             when {
                 expression {
                     env.BRANCH_NAME == 'jenkins-jobs'
@@ -60,37 +73,21 @@ pipeline {
             }
             steps {
                 script {
-                    gvScript.testApp()
+                    testApp()
                 }
             }
         }
-        stage('deploy') {
+        stage('EC2 Deploy') {
             steps {
                 script {
-                    gvScript.deployApp()
-                    echo "Deploying to branch ${env.BRANCH_NAME}"
-                }
-                withCredentials([
-                    usernamePassword(credentialsId: 'my-creds', usernameVariable: 'USER', passwordVariable: 'PASSWORD')
-                ]) {
-                    echo 'Done'
+                    deployApp()
                 }
             }
         }
-        stage('commit version update') {
+        stage('Commit Version Update') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'PASSWORD', usernameVariable: 'USER')]) {
-                    sh 'git config --global user.email "jenkins@kook.work"'
-                    sh 'git config --global user.name "jenkins"'
-                    sh 'git status'
-                    sh 'git branch'
-                    sh 'git config --list'
-                    sh "git remote set-url origin https://${PASSWORD}@github.com/${USER}/devops-maven.git"
-                    sh 'git add .'
-                    sh 'git commit -m "CI: Version bump"'
-                    sh 'git push origin HEAD:jenkins-jobs'
-                    }
+                    updateGit()
                 }
             }
         }
