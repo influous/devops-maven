@@ -19,6 +19,7 @@ pipeline {
     }
     
     environment {
+        APP_NAME = 'devops-maven'
         EC2_USER = 'ubuntu'
         EC2_ADDRESS = '3.75.225.159'
         IMAGE_BASE = 'influous/devops-maven'
