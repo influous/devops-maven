@@ -19,12 +19,15 @@ pipeline {
     }
     
     environment {
+        APP_NAME = 'devops-maven'
         EC2_USER = 'ubuntu'
         EC2_ADDRESS = '3.75.225.159'
         IMAGE_BASE = 'influous/devops-maven'
-        IMAGE_TAG = '1.0'
+        IMAGE_TAG = '1.1'
         IMAGE_BUILD = "${IMAGE_BASE}:${IMAGE_TAG}-${BUILD_NUMBER}"
         IMAGE_LATEST = "${IMAGE_BASE}:latest"
+        AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
+        AWS_SECRET_ACCESS_KEY = credentials('jenkins_aws_secret_access_key')
     }
 
     agent any
