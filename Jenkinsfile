@@ -1,7 +1,5 @@
 #!/usr/bin/env groovy
 
-// @Library('jenkins-shared-library') _
-
 library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
     [$class: 'GitSCMSource',
     remote: 'https://github.com/influous/jenkins-shared-library',
@@ -9,95 +7,99 @@ library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
     ]
 )
 
-def gvScript
-
 pipeline {
     parameters {
-        choice(name: 'VERSION', choices: ['1.1.0', '1.2.0', '1.3.0'], description: '')
+        string(name: 'VERSION', defaultValue: "${env.VERSION}", description: '')
+        // choice(name: 'VERSION', choices: ['1.0.0', '1.1.0', '1.2.0'], description: '')
         booleanParam(name: 'executeTests', defaultValue: true, description: '')
-    }
-
-    environment {
-        // SERVER_CREDENTIALS = credentials('my-creds')
-        TEST = true
     }
 
     tools {
         maven 'maven-3.8.6'
     }
+    
+    environment {
+        EC2_USER = 'ubuntu'
+        EC2_ADDRESS = '3.75.225.159'
+        IMAGE_BASE = 'influous/devops-maven'
+        IMAGE_TAG = '1.0'
+        IMAGE_BUILD = "${IMAGE_BASE}:${IMAGE_TAG}-${BUILD_NUMBER}"
+        IMAGE_LATEST = "${IMAGE_BASE}:latest"
+    }
+    
+    environment {
+        EC2_USER = 'ubuntu'
+        EC2_ADDRESS = '3.75.225.159'
+        IMAGE_BASE = 'influous/devops-maven'
+        IMAGE_TAG = '1.0'
+        IMAGE_BUILD = "${IMAGE_BASE}:${IMAGE_TAG}-${BUILD_NUMBER}"
+        IMAGE_LATEST = "${IMAGE_BASE}:latest"
+    }
 
     agent any
+
     stages {
-        stage('init') {
+        stage('Init') {
             steps {
                 script {
-                    echo "Current branch: ${env.BRANCH_NAME}"
-                    gvScript = load "script.groovy"
+                    echo "Image name: ${env.IMAGE_BASE}"
+                    echo "Build: ${env.IMAGE_BUILD}"
+                    echo "Working on branch: ${env.BRANCH_NAME}"
                 }
             }
         }
-        stage('build jar') {
-            when {
-                expression {
-                    env.BRANCH_NAME == 'main'
+
+        stage('Increment Version') {
+            steps {
+                script {
+                    incrementVersion()
                 }
             }
+        }
+
+        stage('Build Jar') {
             steps {
                 script {
                     buildJar()
                 }
             }
         }
-        stage('build and push image') {
+        stage('Build & Push Docker Image') {
             steps {
                 script {
-                    buildImage('influous/infx-repo:dm1.2')
+                    buildImage(env.IMAGE_BUILD, env.IMAGE_LATEST)
                     dockerLogin()
-                    dockerPush 'influous/infx-repo:dm1.2'
+                    dockerPush(env.IMAGE_BUILD, env.IMAGE_LATEST)
                 }
             }
         }
-        stage('test') {
+        stage('Test') {
             when {
                 expression {
-                    env.BRANCH_NAME == 'main'
+                    env.BRANCH_NAME == 'jenkins-jobs'
                     params.executeTests // if true, this stage is executed
                 }
             }
             steps {
                 script {
-                    gvScript.testApp()
+                    testApp()
                 }
             }
         }
-        stage('deploy') {
-            when {
-                expression {
-                    env.BRANCH_NAME == 'jenkins-shared-lib'
-                }
-            }
+        stage('EC2 Deploy') {
             steps {
                 script {
-                    env.ENV = input message: 'Select the environment to deploy to:', ok: 'Done', parameters: [choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: '')]
-                    gvScript.deployApp()
-                    echo "Deploying to ${ENV}"
+                    deployApp()
                 }
-                withCredentials([
-                    usernamePassword(credentialsId: 'my-creds', usernameVariable: 'USER', passwordVariable: 'PASSWORD')
-                ]) {
-                    echo 'Done'
+            }
+        }
+        stage('Commit Version Update') {
+            steps {
+                script {
+                    updateGit()
                 }
             }
         }
     }
 
-    // post {
-    //     always {
-    //         //Sending a notifcation (mail)
-    //     }
-    //     success {
-    //     }
-    //     failure {
-    //     }
-    // }
 }

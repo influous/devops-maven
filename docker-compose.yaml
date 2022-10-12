@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  devops-maven:
+    image: ${IMAGE}
+    ports:
+      - 8080:8080
+  postgres:
+    image: postgres:14.5
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=9f252b2aa297d4b4b3e7
