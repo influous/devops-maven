@@ -18,7 +18,7 @@ spec:
         - name: aws-registry-key
       containers:
         - name: $APP_NAME
-          image: $DOCKER_REPO:$BUILD_TAG
+          image: $DOCKER_REPO:$BUILD_LATEST
           imagePullPolicy: IfNotPresent
           resources:
             limits:
