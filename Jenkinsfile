@@ -10,7 +10,6 @@ library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
 pipeline {
     parameters {
         string(name: 'VERSION', defaultValue: "${env.VERSION}", description: '')
-        // choice(name: 'VERSION', choices: ['1.0.0', '1.1.0', '1.2.0'], description: '')
         booleanParam(name: 'executeTests', defaultValue: true, description: '')
     }
 
@@ -20,14 +19,16 @@ pipeline {
     
     environment {
         APP_NAME = 'devops-maven'
+        DOCKER_REPO_SERVER = '909155662125.dkr.ecr.eu-central-1.amazonaws.com'
+        DOCKER_REPO = "${DOCKER_REPO_SERVER}/devops-maven"
         EC2_USER = 'ubuntu'
         EC2_ADDRESS = '3.75.225.159'
         IMAGE_BASE = 'influous/devops-maven'
         IMAGE_TAG = '1.1'
+        BUILD_TAG = "${IMAGE_TAG}-${BUILD_NUMBER}"
+        BUILD_LATEST = 'latest'
         IMAGE_BUILD = "${IMAGE_BASE}:${IMAGE_TAG}-${BUILD_NUMBER}"
-        IMAGE_LATEST = "${IMAGE_BASE}:latest"
-        AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
-        AWS_SECRET_ACCESS_KEY = credentials('jenkins_aws_secret_access_key')
+        IMAGE_LATEST = "${IMAGE_BASE}:${BUILD_LATEST}"
     }
 
     agent any
@@ -61,9 +62,9 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 script {
-                    buildImage(env.IMAGE_BUILD, env.IMAGE_LATEST)
+                    buildImage()
                     dockerLogin()
-                    dockerPush(env.IMAGE_BUILD, env.IMAGE_LATEST)
+                    dockerPush()
                 }
             }
         }

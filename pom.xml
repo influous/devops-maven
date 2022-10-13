@@ -6,7 +6,7 @@
 
     <groupId>com.example</groupId>
     <artifactId>devops-maven</artifactId>
-    <version>1.0.34</version>
+    <version>1.0.37</version>
 
     <build>
         <plugins>
