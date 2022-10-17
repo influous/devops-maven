@@ -4,3 +4,4 @@ target
 
 .terraform/*
 terraform/.terraform/*
+.terraform.lock.hcl
