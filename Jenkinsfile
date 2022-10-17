@@ -106,10 +106,9 @@ pipeline {
                     echo "Deploying to EC2 instance on ${env.EC2_PUBLIC_IP}"
                     def shellCmds = "bash ./server_cmds.sh ${env.IMAGE_LATEST}"
                     sshagent(['ec2-ssh-key']) {
-
-                    sh "scp -o StrictHostKeyChecking=no server_cmds.sh ${EC2_USER}@${EC2_PUBLIC_IP}:/home/ec2-user"
-                    sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ${EC2_USER}@${EC2_PUBLIC_IP}:/home/ec2-user"
-                    sh "ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_PUBLIC_IP} ${shellCmds}"
+                        sh "scp -o StrictHostKeyChecking=no server_cmds.sh ${EC2_USER}@${EC2_PUBLIC_IP}:/home/ec2-user"
+                        sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ${EC2_USER}@${EC2_PUBLIC_IP}:/home/ec2-user"
+                        sh "ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_PUBLIC_IP} ${shellCmds}"
                     }
                 }
             }
