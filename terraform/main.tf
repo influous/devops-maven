@@ -1,4 +1,10 @@
 terraform {
+  required_version = ">= 0.12"
+  backend "s3" {
+    bucket = "infx-bucket"
+    key = "infx/state.tfstate"
+    region = "eu-central-1"
+  }
   required_providers {
     aws = {
       source  = "hashicorp/aws"

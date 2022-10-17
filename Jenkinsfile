@@ -46,7 +46,6 @@ pipeline {
                 }
             }
         }
-
         stage('Increment Version') {
             steps {
                 script {
@@ -54,7 +53,6 @@ pipeline {
                 }
             }
         }
-
         stage('Build Jar') {
             steps {
                 script {
