@@ -52,7 +52,7 @@ resource "aws_default_security_group" "default-sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.allowed_ips]
+    cidr_blocks = [var.allowed_ips, var.jenkins_ip]
   }
 
   ingress {
@@ -103,51 +103,4 @@ resource "aws_instance" "infx-server" {
   tags = {
     Name = "${var.env_prefix}-server"
   }
-
 }
-
-# resource "aws_route_table" "infx-route-table" {
-#   vpc_id = aws_vpc.infx-vpc.id
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_internet_gateway.infx-igw.id
-#   }
-#   tags = {
-#     Name : "${var.env_prefix}-rtb"
-#   }
-# }
-
-# resource "aws_route_table_association" "a-rtb-subnet" {
-#     subnet_id = aws_subnet.infx-subnet-1.id
-#     route_table_id = aws_route_table.infx-route-table.id
-# }
-
-# resource "aws_security_group" "infx-sg" {
-#   name   = "infx-sg"
-#   vpc_id = aws_vpc.infx-vpc.id
-
-#   ingress { # can also be a range, from_port=0 to_port=200
-#     from_port  = 22
-#     to_port    = 22
-#     protocol   = "tcp"
-#     cidr_blocks = [var.allowed_ips]
-#   }
-
-#   ingress {
-#     from_port  = 8080
-#     to_port    = 8080
-#     protocol   = "tcp"
-#     cidr_blocks = ["0.0.0.0/0"]    
-#   }
-
-#   egress { # outgoing requests on any port, any protocol
-#     from_port  = 0
-#     to_port    = 0
-#     protocol   = "-1"
-#     cidr_blocks = ["0.0.0.0/0"]      
-#   }
-
-#   tags = {
-#     Name : "${var.env_prefix}-sg"
-#   }
-# }
