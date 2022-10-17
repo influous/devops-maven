@@ -21,8 +21,7 @@ pipeline {
         APP_NAME = 'devops-maven'
         DOCKER_REPO_SERVER = '909155662125.dkr.ecr.eu-central-1.amazonaws.com'
         DOCKER_REPO = "${DOCKER_REPO_SERVER}/devops-maven"
-        EC2_USER = 'ubuntu'
-        EC2_ADDRESS = '3.75.225.159'
+        EC2_USER = 'ec2-user'
         IMAGE_BASE = 'influous/devops-maven'
         IMAGE_TAG = '1.1'
         BUILD_TAG = "${IMAGE_TAG}-${BUILD_NUMBER}"
@@ -81,10 +80,34 @@ pipeline {
                 }
             }
         }
+        stage('Provision Server') {
+            steps {
+                script {
+                    dir('terraform') {
+                        sh "terraform init"
+                        sh "terraform apply --auto-approve"
+                        EC2_PUBLIC_IP = sh(
+                            script: "terraform output aws_ami_ip",
+                            returnStdout: true
+                        ).trim()
+                    }
+                }
+            }
+        }
         stage('EC2 Deploy') {
             steps {
                 script {
-                    deployApp()
+                    echo 'Waiting for EC2 server to initialize...'
+                    sleep(time: 90, unit: "SECONDS")
+
+                    echo "Deploying to EC2 instance on ${env.EC2_PUBLIC_IP}"
+                    def shellCmds = "bash ./server_cmds.sh ${env.IMAGE_LATEST}"
+                    sshagent(['ec2-ssh-key']) {
+
+                    sh "scp -o StrictHostKeyChecking=no server_cmds.sh ${EC2_USER}@${EC2_PUBLIC_IP}:/home/ec2-user"
+                    sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ${EC2_USER}@${EC2_PUBLIC_IP}:/home/ec2-user"
+                    sh "ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_PUBLIC_IP} ${shellCmds}"
+                    }
                 }
             }
         }
@@ -96,5 +119,4 @@ pipeline {
             }
         }
     }
-
 }
