@@ -21,6 +21,7 @@ pipeline {
         APP_NAME = 'devops-maven'
         DOCKER_REPO_SERVER = '909155662125.dkr.ecr.eu-central-1.amazonaws.com'
         DOCKER_REPO = "${DOCKER_REPO_SERVER}/devops-maven"
+        DOCKER_CREDENTIALS = credentials('docker-hub-repo')
         EC2_USER = 'ec2-user'
         IMAGE_BASE = 'influous/devops-maven'
         IMAGE_TAG = '1.1'
@@ -104,8 +105,8 @@ pipeline {
                     sleep(time: 90, unit: "SECONDS")
 
                     echo "Deploying to EC2 instance on ${env.EC2_PUBLIC_IP}"
-                    def shellCmds = "bash ./server_cmds.sh ${env.IMAGE_LATEST}"
-                    sshagent(['ec2-ssh-key']) {
+                    def shellCmds = "bash ./server_cmds.sh ${env.IMAGE_LATEST} ${DOCKER_CREDENTIALS_USR} ${DOCKER_CREDENTIALS_PSW}"
+                    sshagent(['ec2-ssh-key-nu']) {
                         sh "scp -o StrictHostKeyChecking=no server_cmds.sh ${EC2_USER}@${EC2_PUBLIC_IP}:/home/ec2-user"
                         sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ${EC2_USER}@${EC2_PUBLIC_IP}:/home/ec2-user"
                         sh "ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_PUBLIC_IP} ${shellCmds}"
